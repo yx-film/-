@@ -21,7 +21,7 @@
     }
     h2 { text-align: center; }
     input, button {
-        width: 100%;
+        width: 80%;
         padding: 12px;
         margin-top: 10px;
         font-size: 16px;
@@ -55,26 +55,13 @@
 
 <script>
 function formatTime(date, baseDay) {
-    let y = date.getFullYear();
-    let mo = String(date.getMonth() + 1).padStart(2, '0');
-    let d = String(date.getDate()).padStart(2, '0');
-   return `${y}-${mo}-${d} ${h}:${m}`;
-}
+    let h = String(date.getHours()).padStart(2, '0');
+    let m = String(date.getMinutes()).padStart(2, '0');
 
-// 班別轉換（核心邏輯）
-function getShiftName(hours) {
-    if (20<hours < 8) return "";
+    let dayDiff = date.getDate() - baseDay.getDate();
+    let dayText = dayDiff > 0 ? ` (+${dayDiff}天)` : "";
 
-    let shift = 1 + (hours - 8) / 3; // 每3小時半班
-
-    let full = Math.floor(shift);
-    let half = shift % 1 !== 0;
-
-    if (half) {
-        return `${full}班半`;
-    } else {
-        return `${full}班`;
-    }
+    return `${h}:${m}${dayText}`;
 }
 
 function calc() {
@@ -82,17 +69,15 @@ function calc() {
     let resultDiv = document.getElementById("result");
 
     if (!start) {
-        resultDiv.innerHTML = "請輸入出班時間";
+        resultDiv.innerHTML = "請輸入上班時間";
         return;
     }
 
-    let base = new Date(start);
+    let base = new Date("2000-01-01 " + start);
+    let times = [8, 11, 14, 17, 24];
 
-    // 起始點（照你的規則）
-    let times = [8, 11, 14, 17, 20, 22, 24];
-
-    // +24之後，每+2小時
-    for (let i = 26; i <= 40; i += 2) {
+    // +24 之後每 +2 小時，先算到 +36（你可以改）
+    for (let i = 26; i <= 36; i += 2) {
         times.push(i);
     }
 
@@ -102,12 +87,7 @@ function calc() {
         let d = new Date(base);
         d.setHours(d.getHours() + t);
 
-        let shiftName = getShiftName(t);
-
-        html += `
-        <div class="row">
-            +${t} 小時 → ${formatTime(d, base)}（${shiftName}）
-        </div>`;
+        html += `<div class="row">+${t} 小時 → ${formatTime(d, base)}</div>`;
     });
 
     resultDiv.innerHTML = html;
