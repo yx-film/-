@@ -68,9 +68,9 @@ function formatTime(date, baseDay) {
 
 // 班別轉換（核心邏輯）
 function getShiftName(hours) {
-    if (hours < 8) return "";
+    if (20<hours < 8) return "1班";
 
-    let shift = 1 + (hours - 8) / 2; // 每2小時半班
+    let shift = 1 + (hours - 8) / 3; // 每3小時半班
 
     let full = Math.floor(shift);
     let half = shift % 1 !== 0;
