@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>燈光組跳班計算</title>
+<style>
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #051f0c;
+        margin: 0;
+        padding: 20px;
+    }
+    .card {
+        background: white;
+        padding: 20px;
+        border-radius: 16px;
+        max-width: 420px;
+        margin: auto;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+    h2 { text-align: center; }
+    input, button {
+        width: 100%;
+        padding: 12px;
+        margin-top: 10px;
+        font-size: 16px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+    }
+    button {
+        background: #007aff;
+        color: white;
+        border: none;
+    }
+    .row {
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+        font-size: 16px;
+    }
+</style>
+</head>
+<body>
+
+<div class="card">
+    <h2>跳班計算</h2>
+
+    <label>出班時間</label>
+    <input type="time" id="start">
+
+    <button onclick="calc()">班數計算</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+function formatTime(date, baseDay) {
+    let h = String(date.getHours()).padStart(2, '0');
+    let m = String(date.getMinutes()).padStart(2, '0');
+
+    let dayDiff = date.getDate() - baseDay.getDate();
+    let dayText = dayDiff > 0 ? ` (+${dayDiff}天)` : "";
+
+    return `${h}:${m}${dayText}`;
+}
+
+// 班別轉換（核心邏輯）
+function getShiftName(hours) {
+    if (hours < 8) return "";
+
+    let shift = 1 + (hours - 8) / 2; // 每2小時半班
+
+    let full = Math.floor(shift);
+    let half = shift % 1 !== 0;
+
+    if (half) {
+        return `${full}班半`;
+    } else {
+        return `${full}班`;
+    }
+}
+
+function calc() {
+    let start = document.getElementById("start").value;
+    let resultDiv = document.getElementById("result");
+
+    if (!start) {
+        resultDiv.innerHTML = "請輸入上班時間";
+        return;
+    }
+
+    let base = new Date("2000-01-01 " + start);
+
+    // 起始點（照你的規則）
+    let times = [8, 11, 14, 17, 20, 22, 24];
+
+    // +24之後，每+2小時
+    for (let i = 26; i <= 40; i += 2) {
+        times.push(i);
+    }
+
+    let html = "";
+
+    times.forEach(t => {
+        let d = new Date(base);
+        d.setHours(d.getHours() + t);
+
+        let shiftName = getShiftName(t);
+
+        html += `
+        <div class="row">
+            +${t} 小時 → ${formatTime(d, base)}（${shiftName}）
+        </div>`;
+    });
+
+    resultDiv.innerHTML = html;
+}
+</script>
+
+</body>
+</html>
