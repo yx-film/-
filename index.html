@@ -12,7 +12,7 @@
         padding: 20px;
     }
     .card {
-        background: white;
+        background: #FFE153;
         padding: 20px;
         border-radius: 0px;
         max-width: 420px;
@@ -46,7 +46,7 @@
     <h2>跳班計算</h2>
 
     <label>出班時間</label>
-    <input type="time" id="start">
+    <input type="datetime-local" id="start">
 
     <button onclick="calc()">班數計算</button>
 
@@ -55,20 +55,17 @@
 
 <script>
 function formatTime(date, baseDay) {
-    let h = String(date.getHours()).padStart(2, '0');
-    let m = String(date.getMinutes()).padStart(2, '0');
-
-    let dayDiff = date.getDate() - baseDay.getDate();
-    let dayText = dayDiff > 0 ? ` (+${dayDiff}天)` : "";
-
-    return `${h}:${m}${dayText}`;
+    let y = date.getFullYear();
+    let mo = String(date.getMonth() + 1).padStart(2, '0');
+    let d = String(date.getDate()).padStart(2, '0');
+   return `${y}-${mo}-${d} ${h}:${m}`;
 }
 
 // 班別轉換（核心邏輯）
 function getShiftName(hours) {
-    if (hours < 8) return "";
+    if (20<hours < 8) return "";
 
-    let shift = 1 + (hours - 8) / 2; // 每2小時半班
+    let shift = 1 + (hours - 8) / 3; // 每3小時半班
 
     let full = Math.floor(shift);
     let half = shift % 1 !== 0;
@@ -85,11 +82,11 @@ function calc() {
     let resultDiv = document.getElementById("result");
 
     if (!start) {
-        resultDiv.innerHTML = "請輸入上班時間";
+        resultDiv.innerHTML = "請輸入出班時間";
         return;
     }
 
-    let base = new Date("2000-01-01 " + start);
+    let base = new Date(start);
 
     // 起始點（照你的規則）
     let times = [8, 11, 14, 17, 20, 22, 24];
