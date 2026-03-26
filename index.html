@@ -64,6 +64,22 @@ function formatTime(date, baseDay) {
     return `${h}:${m}${dayText}`;
 }
 
+// 班別轉換（核心邏輯）
+function getShiftName(hours) {
+    if (hours < 8) return "";
+
+    let shift = 1 + (hours - 8) / 2; // 每2小時半班
+
+    let full = Math.floor(shift);
+    let half = shift % 1 !== 0;
+
+    if (half) {
+        return `${full}班半`;
+    } else {
+        return `${full}班`;
+    }
+}
+
 function calc() {
     let start = document.getElementById("start").value;
     let resultDiv = document.getElementById("result");
@@ -74,10 +90,12 @@ function calc() {
     }
 
     let base = new Date("2000-01-01 " + start);
-    let times = [8, 11, 14, 17, 24];
 
-    // +24 之後每 +2 小時，先算到 +36（你可以改）
-    for (let i = 26; i <= 36; i += 2) {
+    // 起始點（照你的規則）
+    let times = [8, 11, 14, 17, 20, 22, 24];
+
+    // +24之後，每+2小時
+    for (let i = 26; i <= 40; i += 2) {
         times.push(i);
     }
 
@@ -87,12 +105,20 @@ function calc() {
         let d = new Date(base);
         d.setHours(d.getHours() + t);
 
-        html += `<div class="row">+${t} 小時 → ${formatTime(d, base)}</div>`;
+        let shiftName = getShiftName(t);
+
+        html += `
+        <div class="row">
+            +${t} 小時 → ${formatTime(d, base)}（${shiftName}）
+        </div>`;
     });
 
     resultDiv.innerHTML = html;
 }
 </script>
+
+</body>
+</html>
 
 </body>
 </html>
