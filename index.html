@@ -30,8 +30,6 @@
     }
     button {
         background: #6b0606;
-        width: 80%;
-        padding: 12px;
         color: white;
         border: none;
     }
@@ -68,8 +66,8 @@ function formatTime(date, baseDay) {
 
 // 班別轉換（核心邏輯）
 function getShiftName(hours) {
-    if (20<hours < 8) return "1班";
-
+    if (hours < 8) return "1班";
+    if (20 > hours > 8) return "1班";
     let shift = 1 + (hours - 8) / 3; // 每3小時半班
 
     let full = Math.floor(shift);
@@ -87,17 +85,17 @@ function calc() {
     let resultDiv = document.getElementById("result");
 
     if (!start) {
-        resultDiv.innerHTML = "請輸入上班時間";
+        resultDiv.innerHTML = "請輸入出班時間";
         return;
     }
 
     let base = new Date("2000-01-01 " + start);
 
     // 起始點（照你的規則）
-    let times = [8, 11, 14, 17, 20, 22, 24];
+    let times = [8, 11, 14, 17, 20];
 
-    // +24之後，每+2小時
-    for (let i = 26; i <= 40; i += 2) {
+    // +20之後，每+2小時
+    for (let i = 20; i <= 40; i += 2) {
         times.push(i);
     }
 
